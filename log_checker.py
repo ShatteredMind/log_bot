@@ -45,6 +45,14 @@ class LogChecker(object):
             return date_in_line and four_spaces_before and no_space_after
         return False
 
+    def wrap_message(self, message_text) -> str:
+        message_split = message_text.split('\n')
+        traceback = message_split[1:-2]
+        log_message = message_split[0]
+        exception_message = message_split[-2]
+        traceback = "\n".join(traceback)
+        return '\n'.join([f'*{log_message}*', f'```{traceback}```', f'*{exception_message}*'])
+
     async def follow(self, log_file, append_line) -> Iterator[str]:
         log_file.seek(0, 2)
         # init coroutine
@@ -56,6 +64,6 @@ class LogChecker(object):
                 continue
             append_line.send(line)
             if self.traceback_was_added():
-                yield "".join(self.mes)
+                yield self.wrap_message("".join(self.mes))
 
     __str__ = __repr__
