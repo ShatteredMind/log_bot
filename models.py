@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import func
 
-
-from datetime import datetime
+from datetime import datetime, timedelta
 
 Base = declarative_base()
 
@@ -16,8 +14,9 @@ class LogEntry(Base):
     url = Column(String(200))
     exception_type = Column(String(40))
     exception_message = Column(String(200))
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=datetime.now)
+    created_at = Column(DateTime, default=datetime.now)
+    notified_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     count = Column(Integer, default=1)
 
     def __repr__(self) -> str:
@@ -29,6 +28,10 @@ class LogEntry(Base):
     def _updated_at(self):
         return datetime.strftime(self.updated_at, '%Y-%m-%d %H:%M:%S')
 
+    @property
+    def was_notified(self):
+        return self.notified_at + timedelta(minutes=30) > datetime.now()
+
     def get_message(self) -> str:
         wrapped_title = f'*{self.__repr__()}*'
         wrapped_traceback = f'```{self.traceback}```'
@@ -39,5 +42,7 @@ class LogEntry(Base):
         session.add(self)
 
     def update(self, session) -> None:
+        if not self.notified_at or not self.was_notified:
+            self.notified_at = datetime.now()
         self.count += 1
         session.add(self)

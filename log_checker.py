@@ -34,7 +34,6 @@ class LogChecker(object):
         new_messages = self.follow(file, self.append_line())
         async for message in new_messages:
             self.bot.notify(message)
-            self.message_lines.clear()
 
     def append_line(self) -> None:
         while True:
@@ -69,9 +68,12 @@ class LogChecker(object):
                 log_entry.save(session)
             else:
                 log_entry = existing_entry
-                existing_entry.update(session)
-
-        return log_entry.get_message()
+                # TODO: fix duplicate log_entry call
+                if not log_entry.notified_at or not log_entry.was_notified:
+                    log_entry.update(session)
+                    return log_entry.get_message()
+                log_entry.update(session)
+        return ''
 
     async def follow(self, log_file, append_line) -> Iterator[str]:
         log_file.seek(0, 2)
@@ -84,6 +86,9 @@ class LogChecker(object):
                 continue
             append_line.send(line)
             if self.traceback_was_added():
-                yield self.process_message()
+                message = self.process_message()
+                if message:
+                    yield message
+                self.message_lines.clear()
 
     __str__ = __repr__

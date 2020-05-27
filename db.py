@@ -10,7 +10,6 @@ def session_scope():
     session.expire_on_commit = False
     try:
         yield session
-
         session.commit()
     except Exception:
         session.rollback()
