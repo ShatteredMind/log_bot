@@ -14,8 +14,8 @@ class LogEntry(Base):
     url = Column(String(200))
     exception_type = Column(String(40))
     exception_message = Column(String(200))
+    notified_at = Column(DateTime)
     created_at = Column(DateTime, default=datetime.now)
-    notified_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     count = Column(Integer, default=1)
 

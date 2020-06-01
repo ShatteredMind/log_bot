@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    env_file:
+      - db.env
+  main:
+    build: .
+    command: bash -c "alembic upgrade head && python3 main.py"
+    volumes:
+      - ${ABSOLUTE_LOG_PATH}:/app/logs

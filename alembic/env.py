@@ -17,7 +17,7 @@ config = context.config
 fileConfig(config.config_file_name)
 
 from settings import DATABASE_URI
-from models import Base
+from src.models import Base
 
 config.set_main_option('sqlalchemy.url', DATABASE_URI)
 

@@ -1,5 +1,5 @@
-from log_checker import LogChecker
-from bot import LogFileBot
+from src.log_checker import LogChecker
+from src.bot import LogFileBot
 from settings import *
 
 import asyncio
