@@ -1,13 +1,16 @@
 version: '3'
 services:
   db:
-    image: "postgres"
-    ports:
-      - "5432:5432"
-    env_file:
-      - db.env
+    image: "postgres:alpine"
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_PASSWORD: bot
+      POSTGRES_USER: bot
+      POSTGRES_DB: bot
   main:
     build: .
     command: bash -c "alembic upgrade head && python3 main.py"
     volumes:
       - ${ABSOLUTE_LOG_PATH}:/app/logs
+      - .:/app

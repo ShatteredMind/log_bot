@@ -67,11 +67,10 @@ class LogChecker(object):
                 log_entry.save(session)
             else:
                 log_entry = existing_entry
-                # TODO: fix duplicate log_entry call
-                if not log_entry.notified_at or not log_entry.was_notified:
-                    log_entry.update(session)
-                    return log_entry.get_message()
                 log_entry.update(session)
+
+        if not log_entry.was_notified:
+            return log_entry.get_message()
         return ''
 
     async def follow(self, log_file, append_line) -> Iterator[str]:

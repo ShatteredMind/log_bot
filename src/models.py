@@ -30,7 +30,9 @@ class LogEntry(Base):
 
     @property
     def was_notified(self):
-        return self.notified_at + timedelta(minutes=30) > datetime.now()
+        if self.notified_at:
+            return self.notified_at + timedelta(minutes=30) > datetime.now()
+        return False
 
     def get_message(self) -> str:
         wrapped_title = f'*{self.__repr__()}*'
